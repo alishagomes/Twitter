@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,20 +15,22 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.models.TweetDao;
+import com.codepath.apps.restclienttemplate.models.TweetWithUser;
+import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Headers;
 public class TimelineActivity extends AppCompatActivity {
     // REFRESH LAYOUT
+
+    TweetDao tweetDao;
     private SwipeRefreshLayout swipeContainer;
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
@@ -41,8 +43,10 @@ public class TimelineActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_timeline);
         client = TwitterApp.getRestClient(this);
+        tweetDao = ((TwitterApp) getApplicationContext()).getMyDatabase().tweetDao();
         // Find the recycler view
         rvTweets = findViewById(R.id.rvTweets);
         // Init the list of tweets and adapter
@@ -67,6 +71,20 @@ public class TimelineActivity extends AppCompatActivity {
             finish();
          }
         });
+        // Query for existing tweets in the DB
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run () {
+                Log.i(TAG,"Showing data from database");
+                List<TweetWithUser> tweetWithUsers = tweetDao.recentItems();
+                List<Tweet> tweetsFromDB = TweetWithUser.getTweetList(tweetWithUsers);
+                adapter.clear();
+                adapter.addAll(tweetsFromDB);
+            }
+        });
+
+
+
         populateHomeTimeline();
         // REFRESH LAYOUT
         // Lookup the swipe container view
@@ -89,7 +107,22 @@ public class TimelineActivity extends AppCompatActivity {
                         // ...the data has come back, add new items to your adapter...
                         JSONArray jsonArray = json.jsonArray;
                         try {
-                            adapter.addAll(Tweet.fromJsonArray(jsonArray));
+                            List<Tweet> tweetsFromNetwork = Tweet.fromJsonArray(jsonArray);
+                            adapter.clear();
+                            adapter.addAll(tweetsFromNetwork);
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run () {
+                                    Log.i(TAG,"Showing data from database");
+                                    // insert users first
+                                    List<User> usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork);
+                                    tweetDao.insertModel(usersFromNetwork.toArray(new User[0]));
+                                    // insert tweets next
+                                    tweetDao.insertModel(tweetsFromNetwork.toArray(new Tweet[0]));
+                                }
+                            });
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -110,7 +143,9 @@ public class TimelineActivity extends AppCompatActivity {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
     }
+
 
     void onLogoutButton() {
         // forget who's logged in
@@ -174,5 +209,7 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

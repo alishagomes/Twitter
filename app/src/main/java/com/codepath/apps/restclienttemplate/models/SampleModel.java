@@ -18,6 +18,7 @@ import java.util.List;
 @Entity
 public class SampleModel {
 
+
 	@PrimaryKey(autoGenerate = true)
 	Long id;
 

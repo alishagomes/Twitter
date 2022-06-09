@@ -33,7 +33,7 @@ public class Tweet {
         if (!jsonObject.getJSONObject("entities").has("media")) {
             tweet.img = "none";
         } else {
-            tweet.img = jsonObject.getJSONObject("entities").getJSONArray("media").getJSONObject(0).getString("media_url");
+            tweet.img = jsonObject.getJSONObject("entities").getJSONArray("media").getJSONObject(0).getString("media_url_https");
         }
         return tweet;
     }

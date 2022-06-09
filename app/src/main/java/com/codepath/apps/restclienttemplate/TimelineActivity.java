@@ -6,18 +6,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 import okhttp3.Headers;
 public class TimelineActivity extends AppCompatActivity {
     // REFRESH LAYOUT
@@ -44,7 +52,15 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
         button = findViewById(R.id.button);
+
+        // on some click or some loading we need to wait for...
+        ProgressBar pb = (ProgressBar) findViewById(R.id.pbLoading);
+        pb.setVisibility(ProgressBar.VISIBLE);
+        // run a background job and once complete
+        pb.setVisibility(ProgressBar.INVISIBLE);
+
         button.setOnClickListener(new View.OnClickListener() {
+
         @Override
         public void onClick(View v) {
             onLogoutButton();
@@ -86,6 +102,7 @@ public class TimelineActivity extends AppCompatActivity {
                         Log.d("DEBUG", "Fetch timeline error: " + e.toString());
                     }
                 });
+
             }
         });
         // Configure the refreshing colors
@@ -157,4 +174,5 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
     }
+
 }

@@ -29,7 +29,6 @@ import java.util.List;
 import okhttp3.Headers;
 public class TimelineActivity extends AppCompatActivity {
     // REFRESH LAYOUT
-
     TweetDao tweetDao;
     private SwipeRefreshLayout swipeContainer;
     public static final String TAG = "TimelineActivity";
@@ -43,7 +42,6 @@ public class TimelineActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_timeline);
         client = TwitterApp.getRestClient(this);
         tweetDao = ((TwitterApp) getApplicationContext()).getMyDatabase().tweetDao();
@@ -56,13 +54,11 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
         button = findViewById(R.id.button);
-
         // on some click or some loading we need to wait for...
         ProgressBar pb = (ProgressBar) findViewById(R.id.pbLoading);
         pb.setVisibility(ProgressBar.VISIBLE);
         // run a background job and once complete
         pb.setVisibility(ProgressBar.INVISIBLE);
-
         button.setOnClickListener(new View.OnClickListener() {
 
         @Override
@@ -71,6 +67,7 @@ public class TimelineActivity extends AppCompatActivity {
             finish();
          }
         });
+
         // Query for existing tweets in the DB
         AsyncTask.execute(new Runnable() {
             @Override
@@ -83,9 +80,8 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
-
-
         populateHomeTimeline();
+
         // REFRESH LAYOUT
         // Lookup the swipe container view
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -121,21 +117,17 @@ public class TimelineActivity extends AppCompatActivity {
                                     tweetDao.insertModel(tweetsFromNetwork.toArray(new Tweet[0]));
                                 }
                             });
-
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         // Now we call setRefreshing(false) to signal refresh has finished
                         swipeContainer.setRefreshing(false);
-
                     }
                     @Override
                     public void onFailure(int statusCode, Headers headers, String response, Throwable e) {
                         Log.d("DEBUG", "Fetch timeline error: " + e.toString());
                     }
                 });
-
             }
         });
         // Configure the refreshing colors
@@ -143,10 +135,7 @@ public class TimelineActivity extends AppCompatActivity {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
     }
-
-
     void onLogoutButton() {
         // forget who's logged in
         TwitterApp.getRestClient(this).clearAccessToken();
@@ -167,10 +156,8 @@ public class TimelineActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.compose) {
             // Compose icon has been selected
             // Navigate to the compose activity
-
             Intent intent = new Intent(this,ComposeActivity.class);
             startActivityForResult(intent,REQUEST_CODE);
-
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -186,7 +173,6 @@ public class TimelineActivity extends AppCompatActivity {
             // Update the adapter
             adapter.notifyItemInserted(0);
             rvTweets.smoothScrollToPosition(0);
-
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -209,7 +195,4 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 }

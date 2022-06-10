@@ -6,8 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp">
 
-
-
     <androidx.cardview.widget.CardView
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -50,7 +48,6 @@
         android:fontFamily="@font/roboto"
         android:autoLink="all"
         android:linksClickable="true"
-
         />
 
     <ImageView

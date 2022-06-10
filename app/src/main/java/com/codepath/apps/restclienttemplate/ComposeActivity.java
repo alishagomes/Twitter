@@ -24,7 +24,6 @@ public class ComposeActivity extends AppCompatActivity {
     public static final String TAG = "ComposeActivity";
     public static final int MAX_TWEET_LENGTH = 140;
 
-
     EditText etCompose;
     Button btnTweet;
 
@@ -76,9 +75,7 @@ public class ComposeActivity extends AppCompatActivity {
                         Log.e(TAG, "onFailure to publish tweet",throwable);
                     }
                 });
-
             }
         });
-
     }
 }

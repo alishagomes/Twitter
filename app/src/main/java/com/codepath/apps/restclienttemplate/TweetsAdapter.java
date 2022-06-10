@@ -25,7 +25,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     Context context;
     List<Tweet> tweets;
 
-
     // Pass in the context and list of tweets
     public TweetsAdapter(Context context, List<Tweet> tweets) {
         this.context = context;
@@ -45,9 +44,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         Tweet tweet = tweets.get(position);
         // Bind the tweet with view holder
         holder.bind(tweet);
-
     }
-
 
     @Override
     public int getItemCount() {
@@ -62,7 +59,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         // for tweets images
         ImageView ivImage;
         TextView timestamp;
-
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,15 +76,12 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvScreenName.setText(tweet.user.screenName);
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
 
-
             if(tweet.img != "none") {
                 Glide.with(context).load(tweet.img).into(ivImage);
             } else {
                 ivImage.setVisibility(View.GONE);
             }
-
             timestamp.setText(getRelativeTimeAgo(tweet.createdAt));
-
         }
     }
 
@@ -122,10 +115,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 return diff / DAY_MILLIS + " d";
             }
         } catch (ParseException e) {
-
             e.printStackTrace();
         }
-
         return "";
     }
 
@@ -140,5 +131,4 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         tweets.addAll(list);
         notifyDataSetChanged();
     }
-
 }
